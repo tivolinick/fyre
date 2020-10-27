@@ -1,0 +1,3 @@
+fyreAPIKey=htkYW7w0Ped3yozzvtFM3GSUN9t6nvfFZzEVGbWwp
+userid=nick.freer
+curl -X POST -k -u $userid:$fyreAPIKey 'https://api.fyre.ibm.com/rest/v1/?operation=deployopenshiftcluster' --data '{ "cluster_name" : "bigger5", "site" : "svl", "ocp_version" : "4.3", "master_quantity" : 3, "master_cpu" : 8, "master_memory" : 8, "worker_quantity" : 7, "worker_cpu" : 8, "worker_memory" : 32, "product_group_id" : 119 }'

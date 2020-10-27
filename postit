@@ -1,0 +1,2 @@
+  fyreAPIKey=htkYW7w0Ped3yozzvtFM3GSUN9t6nvfFZzEVGbWwp
+  curl -X POST -k -u nick.freer:$fyreAPIKey  $1 'https://api.fyre.ibm.com/rest/v1/?operation=resize_node&node_name=mcm1-worker-2' --data '{"mcm1-worker-2": [ {"ember_name": "mcm1-worker-2", "os_name": "coreos 4.3", "cpu": "12", "memory": "32", "os_disk_size": "250", "publicip": "", "privateip": "10.16.79.198", "additional_disks": "500,500", "status": "deployed", "instance_type": "virtual_server", "platform": "x", "state": " ", "root_password": "t!v0l!A1"}  ]  }'

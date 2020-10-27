@@ -1,0 +1,2 @@
+  fyreAPIKey=htkYW7w0Ped3yozzvtFM3GSUN9t6nvfFZzEVGbWwp
+  curl -X GET -k -u nick.freer:$fyreAPIKey  $1

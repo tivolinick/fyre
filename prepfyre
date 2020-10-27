@@ -1,0 +1,7 @@
+echo 'vi login'
+echo "ioc login -u kubeadmin -p $1"
+echo
+echo chmod a+x login
+echo ./login
+echo  oc -n openshift-console get route
+
