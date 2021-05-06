@@ -1,0 +1,47 @@
+#! /usr/local/bin/bash
+
+HOSTS=/Users/nickfreer/fyre-hosts
+if [ $# -lt 1 ] ; then 
+  echo 'USAGE: fyre <host> <cmds>'
+  echo
+  cat $HOSTS
+  exit 1
+fi
+if [ "$(echo $1 | grep '\.')" != '' ] ; then
+  hostname=$1
+else
+  count=$(grep $1 $HOSTS | grep -v '^#' | wc -l)
+  if [ ${count} -eq 1 ] ; then
+    hostline=$(grep $1 $HOSTS | grep -v '^#' )
+  elif [ $(grep "\s${1}\s" $HOSTS | grep -v '^#' | wc -l) -eq 1 ] ; then
+    hostline=$(grep "\s${1}\s" $HOSTS | grep -v '^#' )
+  elif [ $(grep "^${1}\s" $HOSTS | grep -v '^#' | wc -l) -eq 1 ] ; then
+    hostline=$(grep "^${1}\s" $HOSTS | grep -v '^#' )
+  else
+    hostline=$(grep "$1 " $HOSTS | grep -v '^#' )
+  fi
+  hostline=$(echo $hostline | sed 's/running/ /')
+  for h in $hostline ; do
+    if [ "$(echo $h | grep '^9')" != '' ] ; then
+      hostname=$h
+      break
+    fi
+  done
+fi
+if [ "$hostname" == '' ] ; then
+  if [ ${count} -eq 0 ] ; then
+    echo No host found
+    echo
+    grep -v '^#' $HOSTS
+  else
+    echo No exact match found
+    echo
+    grep $1 $HOSTS | grep -v '^#' 
+  fi
+  exit 1
+fi
+shift
+echo connecting to: $hostname
+#echo "sshpass -p 't!v0l!A1' ssh -o StrictHostKeyChecking=no -i ~/.ssh/fyre_rsa root@$hostname $*"
+sshpass -p 't!v0l!A1' ssh -o StrictHostKeyChecking=no -i ~/.ssh/fyre_rsa root@$hostname $*
+#ssh root@$hostname

@@ -1,7 +1,6 @@
-echo 'vi login'
-echo "ioc login -u kubeadmin -p $1"
+echo "echo oc login -u kubeadmin -p $1 > login" 
 echo
 echo chmod a+x login
 echo ./login
-echo  oc -n openshift-console get route
+echo  'oc -n openshift-console get route --no-headers > consoles'
 

@@ -1,0 +1,109 @@
+#!/bin/ksh
+fyredir=~/.fyre
+
+if [ "$1" == '-h' ] ; then
+  echo 'USAGE:'
+  echo 'fyre -s  - Set up the credentials for the fyre command. You need to know you Fyre Username and API key'
+  echo 'fyre <search> where search is a string that is part of the name of one of your clusters'
+  exit 0
+fi
+if [ "$1" == '-s' ] ; then
+  setup=1
+fi
+if [ ! -f ${fyredir}/creds ] ; then
+  echo 'You must set up your fyre credentials before you use this script. Do you want to do it now [Y/n]: '
+  read a
+  if [ "$a" == '' -o "$a" == 'y' -o "$a" == 'Y' ] ; then
+    setup=1
+  else
+    exit 2
+  fi
+fi
+if [ "${setup}" ] ; then
+  echo -n 'Enter your Fyre Username: '
+  read user
+  echo -n ' Enter your Fyre API key: '
+  read key
+  echo "username: $user"
+  echo " API key: $key"
+  echo -n 'OK to set up these credentials? [Y/n]: '
+  read a
+  if [ "$a" == '' -o "$a" == 'y' -o "$a" == 'Y' ] ; then
+    if [ ! -d ${fyredir} ] ; then
+      mkdir ${fyredir}
+    fi
+    echo fyreAPIkey=${key} > ${fyredir}/creds
+    echo fyreAPIuser=${user} >> ${fyredir}/creds
+    echo 'Credentials Set'
+  fi
+  exit 0
+fi
+
+. ~/.fyre/creds
+
+function getit {
+  curl -X GET -k -u ${fyreAPIuser}:${fyreAPIkey}  $1 2> /dev/null
+}
+if [ $# -lt 1 ] ; then
+  getit 'https://api.fyre.ibm.com/rest/v1/?operation=query&request=showclusters' | jq -r '.clusters[] | (.name)'
+  exit 0
+fi
+if [ "$(echo $1 | grep '\.')" != '' ] ; then
+  host=$1
+# NOT HANDELED
+else
+  clusters=$(getit 'https://api.fyre.ibm.com/rest/v1/?operation=query&request=showclusters' | jq -r '.clusters[] | (.name)')
+  for clname in ${clusters} ; do
+    if [ ${clname} == $1 ] ; then
+      clustername=${clname}
+      break
+    fi
+    if [ "`echo ${clname} | grep $1`" != '' ] ; then
+      clustername="${clname} ${clustername}"
+    fi
+  done
+  shift
+  if [ ! ${clustername} ] ; then
+    echo "Clustername $1 not found"
+    echo 'CLUSTERS:'
+    getit 'https://api.fyre.ibm.com/rest/v1/?operation=query&request=showclusters' | jq -r '.clusters[] | (.name)'
+    exit 1
+  fi
+  if [ "`echo ${clustername} | wc -w`" -gt 1 ] ; then
+    echo no exact match found
+    echo FOUND CLUSTERS:
+    for cl in ${clustername} ; do
+      echo ${cl}
+    done
+    exit 1
+  fi
+  echo "CLUSTER: ${clustername}"
+  nodes=$(getit "https://api.fyre.ibm.com/rest/v1/?operation=query&request=showclusterdetails&cluster_name=${clustername}" | jq -r ".${clustername}[] | (.publicip,.root_password)")
+  for n in ${nodes} ; do
+    if [ ${host} ] ; then
+     pass=${n}
+     break
+    fi
+    if [ "`echo ${n} | grep '9\.'`"  != '' ] ; then
+      host=${n}
+echo HOST: $n
+      count=0
+    fi
+  done
+
+  sshpass -p ${pass} ssh -o StrictHostKeyChecking=no -i ~/.ssh/fyre_rsa root@${host} $*
+
+fi
+
+
+
+
+
+
+
+
+
+
+
+# LAST
+# getit 'https://api.fyre.ibm.com/rest/v1/?operation=query&request=showclusters' | jq -r '.clusters[] | (.name)'
