@@ -1,4 +1,12 @@
 #!/bin/ksh
+#====================================================================================
+Nick Freer, IBM
+Version: 1.0
+Script uses the fyre API to retrieve public IP addresses and root password to connect to host in
+a specified cluster
+Requires you to set up the fyre API credentials the first time you use it
+#====================================================================================
+
 fyredir=~/.fyre
 
 if [ "$1" == '-h' ] ; then
@@ -24,6 +32,7 @@ if [ "${setup}" ] ; then
   read user
   echo -n ' Enter your Fyre API key: '
   read key
+  echo 
   echo "username: $user"
   echo " API key: $key"
   echo -n 'OK to set up these credentials? [Y/n]: '
@@ -34,9 +43,12 @@ if [ "${setup}" ] ; then
     fi
     echo fyreAPIkey=${key} > ${fyredir}/creds
     echo fyreAPIuser=${user} >> ${fyredir}/creds
+    chmod 600 ${fyredir}/creds
     echo 'Credentials Set'
   fi
-  exit 0
+  if [ "$1" == '-s' ] ; then
+    shift
+  fi
 fi
 
 . ~/.fyre/creds

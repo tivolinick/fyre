@@ -1,11 +1,12 @@
 fyreAPIKey=htkYW7w0Ped3yozzvtFM3GSUN9t6nvfFZzEVGbWwp
 userid=nick.freer
 #curl -X POST -k -u $userid:$fyreAPIKey 'https://api.fyre.ibm.com/rest/v1/?operation=query&request=showclusters' | jq '.clusters'
+curl -X POST -k -u $userid:$fyreAPIKey 'https://api.fyre.ibm.com/rest/v1/?operation=query'
 
 #curl -X GET -k -u $userid:$fyreAPIKey 'https://api.fyre.ibm.com/rest/v1/?operation=query&request=showclusterdetails&cluster_name=ndfmcm'
 
 
 
 echo hi
-curl -X GET -k -u $userid:$fyreAPIKey 'https://api.fyre.ibm.com/rest/v1/?operation=query&request=showrequests&cluster_name=ndfmcm'
-
+#curl -X GET -k -u $userid:$fyreAPIKey 'https://api.fyre.ibm.com/rest/v1/?operation=query&request=showrequests&cluster_name=ndfmcm'
+#curl -X GET -k -u $userid:$fyreAPIKey 'https://api.fyre.ibm.com/rest/v1/?operation=query&request=showrequests&cluster_name=ndfmcm'
